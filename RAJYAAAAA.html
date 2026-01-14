@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBD RAJAT | Version 2026.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pastel-pink: #ffeef2;
+            --pastel-blue: #e3f2fd;
+            --pastel-purple: #f3e5f5;
+            --accent: #ff85a1;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple), var(--pastel-blue));
+            color: #444; overflow: hidden; height: 100vh;
+        }
+
+        /* Floating Hearts */
+        .heart {
+            position: fixed;
+            color: #ff69b4;
+            font-size: 25px;
+            animation: floatHeart 6s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes floatHeart {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Floating Balloons */
+        .balloon {
+            position: fixed;
+            font-size: 35px;
+            animation: floatBalloon 8s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes floatBalloon {
+            0% { transform: translateY(100vh) translateX(0px); }
+            50% { transform: translateY(50vh) translateX(30px); }
+            100% { transform: translateY(-100px) translateX(-20px); }
+        }
+
+        /* Glitter Effect */
+        .glitter {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: gold;
+            border-radius: 50%;
+            animation: sparkle 3s infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center; z-index: 10;
+        }
+
+        .active { display: flex; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--glass); backdrop-filter: blur(15px);
+            padding: 35px; border-radius: 35px; border: 2px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            max-width: 550px; width: 85%; position: relative;
+        }
+
+        h1 { font-family: 'Fredoka', cursive; color: var(--accent); font-size: 2.2rem; }
+        .joke-text { font-style: italic; color: #888; margin-bottom: 20px; font-size: 0.9rem; }
+
+        .btn {
+            background: var(--accent); color: white; border: none;
+            padding: 12px 25px; border-radius: 50px; font-size: 1rem;
+            cursor: pointer; margin: 8px; transition: 0.3s;
+            font-weight: bold; font-family: 'Fredoka';
+        }
+        .btn:hover { transform: scale(1.05); background: #ff6b8e; }
+
+        .code-box {
+            background: #282c34; color: #98c379; padding: 15px;
+            border-radius: 15px; text-align: left; font-family: 'Courier New', monospace;
+            margin: 15px 0; font-size: 0.9rem; border-left: 5px solid var(--accent);
+        }
+
+        #meter-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 10px; transition: 0.1s; }
+        .bug { position: absolute; cursor: pointer; font-size: 2.5rem; transition: 0.2s; }
+        
+        .progress-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        .dot { width: 10px; height: 10px; background: #ddd; border-radius: 50%; }
+        .dot.active { background: var(--accent); }
+    </style>
+</head>
+
+<body>
+    <div id="step1" class="overlay active">
+        <div class="card">
+            <h1>HAPPIEST BIRTHDAY RAJAT! 🎂</h1>
+            <p class="joke-text">"Why don't friends ever get null pointer exceptions? Because they always have each other's reference! 💕"</p>
+            <p>"You're the only node I never disconnect from." 💛 Let's play!</p>
+            <button class="btn" onclick="nextStep(2)">BOOT SYSTEM 🚀</button>
+        </div>
+    </div>
+
+    <div id="step2" class="overlay">
+        <div class="card" id="rage-card">
+            <h2>STRESS RELIEF ⌨️</h2>
+            <p class="joke-text">"Friends are like good code - they handle your exceptions and never throw you away! 🤗"</p>
+            <p>MASH KEYS to vent that production stress!</p>
+            <div style="width: 100%; height: 20px; background: #fff; border-radius: 10px; margin: 20px 0;">
+                <div id="meter-fill"></div>
+            </div>
+            <p id="rage-msg">METER: 0%</p>
+        </div>
+    </div>
+
+    <div id="step3" class="overlay">
+        <div class="card" style="height: 70vh;">
+            <h2>BUG SMASH BATTLE 🦟</h2>
+            <p>Score: <b id="score">0</b> | Time: <b id="timer">20</b></p>
+            <div id="bug-field" style="height: 100%; position: relative; overflow: hidden; background: rgba(255,255,255,0.3); border-radius: 20px;"></div>
+        </div>
+    </div>
+
+    <div id="step4" class="overlay">
+        <div class="card">
+            <div class="progress-dots" id="dots"></div>
+            <h2 id="q-title">BRAIN.EXE TEST 🧠</h2>
+            <p id="q-joke" class="joke-text"></p>
+            <div class="code-box" id="code-snippet"></div>
+            <h3 id="q-question" style="color: var(--accent); margin: 20px 0;"></h3>
+            <div id="q-options"></div>
+        </div>
+    </div>
+
+    <div id="step5" class="overlay">
+        <div class="card">
+            <h1 style="font-size: 1.5rem;">DEPLOYING RAJAT_V2026.0...</h1>
+            <div class="code-box" style="font-size: 0.8rem;">
+                > Initializing Heart.exe... [OK]<br>
+                > Optimizing Brain_Logic... [OK]<br>
+                > Cleaning Coffee_Buffer... [OK]<br>
+                > Status: 10x Developer Unlocked.
+            </div>
+            <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <div style="color: var(--accent); font-weight: bold;">∞</div>
+                    <div style="font-size: 0.7rem;">IQ</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="color: var(--accent); font-weight: bold;">0</div>
+                    <div style="font-size: 0.7rem;">BUGS</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="color: var(--accent); font-weight: bold;">100%</div>
+                    <div style="font-size: 0.7rem;">LEGEND</div>
+                </div>
+            </div>
+            <button class="btn" style="margin-top: 25px;" onclick="nextStep(6)">ACCESS ENCRYPTED WISH 📂</button>
+        </div>
+    </div>
+
+    <div id="step6" class="overlay">
+        <div class="card" style="background: #fffbe6; transform: rotate(-1deg);">
+            <h3>To My Favorite Buddy, Rajat 💌</h3>
+            <p>You're a great vibe match and the best giggling partner I could ask for. Thanks for the laughs, the comfort, and always matching my energy while keeping things real. You're truly one of a kind — and yes, my only male best friend. Once again, HAPPIEST BIRTHDAY, RAJYYAA💛✨</p>
+            <p style="text-align: right;"><b>- As always. ✨</b></p>
+            <button class="btn" onclick="nextStep(7)">Final Command</button>
+        </div>
+    </div>
+
+    <div id="step7" class="overlay" style="background: #000; color: #fff;">
+        <h1 style="font-size: 6rem; margin: 0;">😴</h1>
+        <h1 style="color: var(--accent);">ONCE AGAIN HAPPIEST BIRTHDAY RAJAT!!!</h1>
+        <p>System update complete. All modules operational.</p>
+        <h2 style="color: #55efc4;">NOW GO AND SLEEP NOW 😆</h2>
+        <p class="joke-text">"Best friends are like WiFi - you can't see them, but you know they're always there when you need them! 📶💕"</p>
+        <button class="btn" style="background: transparent; border: 2px solid white;" onclick="rebootSystem()">REBOOT SYSTEM 🔄</button>
+    </div>
+
+<script>
+    let quizScore = 0, totalQuestions = 0, rageLevel = 0, bugScore = 0;
+
+    function nextStep(n) {
+        document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+        document.getElementById('step'+n).classList.add('active');
+        if(n === 2) initRage();
+        if(n === 3) initBugs();
+        if(n === 4) startLogicRound();
+        if(n === 5) showResults();
+        triggerConfetti();
+    }
+
+    function triggerConfetti() {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+
+    function initRage() {
+        let progress = 0;
+        const meter = document.getElementById('meter-fill');
+        const msg = document.getElementById('rage-msg');
+        
+        document.addEventListener('keydown', function rageHandler(e) {
+            progress += 2;
+            if(progress > 100) progress = 100;
+            meter.style.width = progress + '%';
+            msg.textContent = `STRESS LEVEL: ${progress}%`;
+            
+            if(progress >= 100) {
+                rageLevel = 100;
+                document.removeEventListener('keydown', rageHandler);
+                setTimeout(() => nextStep(3), 1000);
+            }
+        });
+    }
+
+    function initBugs() {
+        let score = 0, timeLeft = 20;
+        const field = document.getElementById('bug-field');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if(timeLeft <= 0) {
+                clearInterval(timer);
+                bugScore = score;
+                setTimeout(() => nextStep(4), 1000);
+            }
+        }, 1000);
+        
+        function spawnBug() {
+            if(timeLeft <= 0) return;
+            const bug = document.createElement('div');
+            bug.className = 'bug';
+            bug.innerHTML = ['🐛', '🦟', '🐞'][Math.floor(Math.random() * 3)];
+            bug.style.left = Math.random() * 80 + '%';
+            bug.style.top = Math.random() * 80 + '%';
+            
+            bug.onclick = () => {
+                score++;
+                scoreEl.textContent = score;
+                bug.remove();
+                triggerConfetti();
+            };
+            
+            field.appendChild(bug);
+            setTimeout(() => bug.remove(), 3000);
+        }
+        
+        setInterval(spawnBug, 800);
+    }
+
+    const questions = [
+        {
+            joke: "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
+            code: "function birthday(age) {\n  return age + 1;\n}",
+            question: "What does this function return for birthday(25)?",
+            options: ["25", "26", "24", "Error"],
+            correct: 1
+        },
+        {
+            joke: "Why don't programmers like nature? It has too many bugs! 🌿",
+            code: "let friends = ['Rajat', 'Buddy'];\nconsole.log(friends.length);",
+            question: "What will be logged?",
+            options: ["1", "2", "undefined", "Rajat"],
+            correct: 1
+        },
+        {
+            joke: "How do you comfort a JavaScript bug? You console it! 😄",
+            code: "const wish = 'Happy Birthday';\nconst name = 'Rajat';\nreturn wish + ' ' + name;",
+            question: "What's the output?",
+            options: ["Happy Rajat", "Happy Birthday Rajat", "Birthday Rajat", "Error"],
+            correct: 1
+        },
+        {
+            joke: "Why did the developer go broke? Because he used up all his cache! 💸",
+            code: "for(let i = 0; i < 3; i++) {\n  console.log('🎂');\n}",
+            question: "How many cake emojis are printed?",
+            options: ["2", "3", "4", "Infinite"],
+            correct: 1
+        },
+        {
+            joke: "What's a programmer's favorite hangout place? Foo Bar! 🍻",
+            code: "const age = 25;\nif(age >= 18) {\n  return 'Adult';\n} else {\n  return 'Minor';\n}",
+            question: "What does this return for age = 25?",
+            options: ["Minor", "Adult", "25", "true"],
+            correct: 1
+        }
+    ];
+
+    let currentQ = 0;
+
+    function startLogicRound() {
+        totalQuestions = questions.length;
+        currentQ = 0;
+        quizScore = 0;
+        showQuestion();
+    }
+
+    function showQuestion() {
+        if(currentQ >= questions.length) {
+            nextStep(5);
+            return;
+        }
+        
+        const q = questions[currentQ];
+        const dots = document.getElementById('dots');
+        dots.innerHTML = '';
+        
+        for(let i = 0; i < questions.length; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i <= currentQ ? ' active' : '');
+            dots.appendChild(dot);
+        }
+        
+        document.getElementById('q-joke').textContent = q.joke;
+        document.getElementById('code-snippet').textContent = q.code;
+        document.getElementById('q-question').textContent = q.question;
+        document.getElementById('q-title').textContent = `QUESTION ${currentQ + 1}/${questions.length} 🧠`;
+        
+        const optionsDiv = document.getElementById('q-options');
+        optionsDiv.innerHTML = '';
+        
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = opt;
+            btn.onclick = () => answerQuestion(i);
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    function answerQuestion(selected) {
+        const isCorrect = selected === questions[currentQ].correct;
+        const correctAnswer = questions[currentQ].options[questions[currentQ].correct];
+        
+        // Show answer feedback
+        const feedback = document.createElement('div');
+        feedback.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: ' + (isCorrect ? '#4CAF50' : '#f44336') + '; color: white; padding: 20px; border-radius: 10px; z-index: 1000; font-size: 1.2em;';
+        feedback.innerHTML = isCorrect ? 
+            '✅ Correct! Well done!' : 
+            '❌ Wrong! Correct answer: <b>' + correctAnswer + '</b>';
+        document.body.appendChild(feedback);
+        
+        if(isCorrect) {
+            quizScore++;
+            triggerConfetti();
+        }
+        
+        setTimeout(() => {
+            feedback.remove();
+            currentQ++;
+            showQuestion();
+        }, 2000);
+    }
+
+    function showResults() {
+        const percentage = Math.round((quizScore / totalQuestions) * 100);
+        let grade = percentage >= 80 ? "GENIUS! 🧠✨" : percentage >= 60 ? "SMART! 🍪" : "LEARNING! 📚";
+        let color = percentage >= 80 ? "#4CAF50" : percentage >= 60 ? "#FF9800" : "#2196F3";
+        
+        document.querySelector('#step5 .card').innerHTML = 
+            '<h1 style="color: ' + color + ';">' + grade + '</h1>' +
+            '<div style="background: ' + color + '20; padding: 20px; border-radius: 15px; border-left: 5px solid ' + color + ';">' +
+                '🎯 <b>FINAL RESULTS</b> 🎯<br><br>' +
+                'Quiz Score: <b>' + quizScore + '/' + totalQuestions + '</b> (' + percentage + '%)<br>' +
+                'Bugs Killed: <b>' + bugScore + '</b> 🐛<br>' +
+                'Stress Relief: <b>' + rageLevel + '%</b> Complete<br><br>' +
+                '<b style="color: ' + color + ';">Status: Birthday Legend Unlocked!</b>' +
+            '</div>' +
+            '<button class="btn" style="background: ' + color + '; margin-top: 20px;" onclick="nextStep(6)">CLAIM REWARD 🎁</button>';
+    }
+
+    function rebootSystem() {
+        location.reload();
+    }
+
+    function createFloatingElements() {
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '💖';
+            heart.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }, 2000);
+        
+        setInterval(() => {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.innerHTML = ['🎈', '🎂', '🎉'][Math.floor(Math.random() * 3)];
+            balloon.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(balloon);
+            setTimeout(() => balloon.remove(), 8000);
+        }, 3000);
+    }
+
+    window.onload = () => {
+        createFloatingElements();
+        triggerConfetti();
+    };
+</script>
+</body>
+</html>
